@@ -90,8 +90,7 @@ public:
   const std::vector<std::vector<cv::Point>>& getContours() { return contours_; }
 
   //! Update internal parameters
-  virtual void setParams(const cv::SimpleBlobDetector::Params& parameters) override;
-  virtual cv::SimpleBlobDetector::Params getParams() const override;
+  void updateParameters(const cv::SimpleBlobDetector::Params& parameters);
 protected:
   struct Center
   {

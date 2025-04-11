@@ -1,0 +1,32 @@
+ekf_localizer:
+  ros__parameters:
+    predict_frequency: 100.0            # Match sensor input rate (e.g., 100Hz for high-rate IMU)
+    pose_gate_dist: 5.0                 # Tighten to reject outlier pose measurements
+    twist_gate_dist: 3.0                # Stricter threshold for twist outliers
+    enable_yaw_bias_estimation: true    # Critical for compensating IMU drift
+    pose_additional_delay: 0.0          # No added delay (assumes timestamped inputs)
+    twist_additional_delay: 0.0         # No added delay
+    pose_smoothing_steps: 2             # Reduce pose measurement noise
+    twist_smoothing_steps: 1            # Slightly smooth velocity data
+    proc_stddev_vx_c: 0.2               # Higher process noise for linear velocity (tune for IMU/odometry noise)
+    proc_stddev_wz_c: 0.15              # Slightly lower noise for angular velocity (tune for gyro specs)
+    proc_stddev_yaw_c: 0.1              # Keep moderate for heading uncertainty
+    proc_stddev_yaw_bias: 0.05          # Allow faster adaptation to IMU bias
+    z_filter_proc_dev: 1.0              # High uncertainty for unobserved Z-axis (2D system)
+    roll_filter_proc_dev: 1.0           # High uncertainty for unobserved roll (2D system)
+    pitch_filter_proc_dev: 1.0          # High uncertainty for unobserved pitch (2D system)
+
+
+    # Topic names
+    pose_topic: "/ndt_pose_with_cov"
+    twist_topic: "/twist_with_covariance_raw"
+    pose_pub_topic: "ekf_pose"
+    pose_cov_pub_topic: "ekf_pose_with_covariance"
+    odom_pub_topic: "ekf_odom"
+    twist_pub_topic: "ekf_twist"
+    twist_cov_pub_topic: "ekf_twist_with_covariance"
+    diag_pub_topic: "diagnostics"
+
+    # Delay thresholds for diagnostics
+    pose_delay_threshold: 0.1
+    twist_delay_threshold: 0.1

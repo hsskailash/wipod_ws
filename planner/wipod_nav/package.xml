@@ -28,6 +28,9 @@
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>nav_msgs</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>visualization_msgs</exec_depend>  <!-- Fix spelling -->
+  <depend>lanelet2_io</depend>
+  <depend>lanelet2_projection</depend>
 
   <member_of_group>rosidl_interface_packages</member_of_group>
 

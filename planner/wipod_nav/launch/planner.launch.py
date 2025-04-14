@@ -138,7 +138,18 @@ def generate_launch_description():
                 'node_names': [ 'planner_server', 'controller_server', 'behavior_server', 'bt_navigator', 'smoother_server', 'velocity_smoother']
             }]
         ),
-        
+        Node(
+            package='wipod_nav',
+            executable='waypoint_processor',
+            name='waypoint_processor',
+            output='screen',
+            remappings=[('/current_pose','/ndt_pose')],
+            parameters=[{
+                'distance_threshold': 7.0,
+                'map_origin_lat': 12.923903488321232,
+                'map_origin_lon': 77.50052742264235
+            }]
+        ),
         # Load other parameter files
         # Node(
         #     package='wipod_nav',

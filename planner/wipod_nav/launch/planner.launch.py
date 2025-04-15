@@ -63,18 +63,6 @@ def generate_launch_description():
 
 
 
-        # teb_params_path = os.path.join(get_package_share_directory('wipod_nav'),
-        #     'config',
-        #     'teb_local_planner_params.yaml'
-        #     )
-        # smac_params_path = os.path.join(get_package_share_directory('wipod_nav'),
-        #     'config',
-        #     'smac_planner_params.yaml'
-        #     )
-        # smoother_path = os.path.join(get_package_share_directory('wipod_nav'),
-        #     'config',
-        #     'smoother.yaml'
-        #     )
 
         # Planner server node
         Node(
@@ -150,12 +138,18 @@ def generate_launch_description():
                 'map_origin_lon': 77.50052742264235
             }]
         ),
-        # Load other parameter files
-        # Node(
-        #     package='wipod_nav',
-        #     executable='param_loader',
-        #     name='param_loader',
-        #     output='screen',
-        #     parameters=[teb_params_path, smac_params_path, smoother_path]
-        # ) , 'recoveries_server', 'bt_navigator' 'planner_server',
+        Node(
+            package='wipod_nav',
+            executable='osm_2_waypoint.py',
+            name='osm_2_waypoint',
+            output='screen'
+        ),
+        Node(
+            package='wipod_nav',
+            executable='sim_goal_publisher.py',
+            name='sim_goal_publisher',
+            output='screen'
+        ),
+        
+
     ])

@@ -106,9 +106,16 @@ class OSMWaypointGenerator(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = OSMWaypointGenerator()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        # node.get_logger().info("Node shutdown by user request")
+        pass
+    finally:
+        node.destroy_node()
+        if rclpy.ok():
+            rclpy.try_shutdown()
 
 if __name__ == '__main__':
-    main()
+    main() 
+

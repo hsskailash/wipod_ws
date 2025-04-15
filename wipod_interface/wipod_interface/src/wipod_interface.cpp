@@ -242,7 +242,6 @@ private:
         quat_w = msg->quaternion.w;
     }
 
-
     void canCallback(const can_msgs::msg::Frame::SharedPtr msg) {
         // Check if the received message's CAN ID matches the desired CAN ID
         std_msgs::msg::Header header;
@@ -262,10 +261,7 @@ private:
             steer = (array_data[1] << 8) + array_data[0];
             steer_rad = left_steer + ((right_steer-left_steer)/(max_steer-min_steer))*(steer-min_steer);
         }
-        
 
-                       
-        
         if (msg->id == gear_can_id)
         {
             const auto& gear_data = msg->data;
@@ -276,8 +272,7 @@ private:
         if (msg->id == kelly_left_id)
         {
             const auto& array_data = msg->data;
-            std::vector<uint8_t> data(array_data.begin(), array_data.end());
-            
+            std::vector<uint8_t> data(array_data.begin(), array_data.end());            
             rpm = (array_data[1] << 8) + array_data[0];  
             speed_ms = (2.0*3.14159265359*tire_radius)*(rpm/60.0);
            
@@ -310,7 +305,6 @@ private:
             // odom_feedback.pose.covariance[14] = cov_z;
 
             odom_feedback.twist.twist.linear.x = speed_mps;
-            
             odom_feedback.twist.twist.angular.z = steer_rad;
             odom_pub_->publish(odom_feedback);
         }
@@ -337,30 +331,20 @@ private:
             odometry_feedback.twist.twist.angular.z = steer_rad;
             odometry_pub_->publish(odometry_feedback);
         }
-
-        
-
-
     }
     std::array<uint8_t,8>data_2_bus;
     
     void callbackControlCmd(const geometry_msgs::msg::Twist::ConstSharedPtr msg)
     {
-        steer_cmd = msg->angular.z;
-
-        
+        steer_cmd = msg->angular.z;        
         // steer_rate = msg->lateral.steering_tire_rotation_rate;
         speed_cmad = msg->linear.x;
-        // acceleration = msg->longitudinal.acceleration;
-
-       
-
+        // acceleration = msg->longitudinal.acceleration
         steer_can = ((steer_cmd - left_steer) / (right_steer - left_steer)) * (max_steer - min_steer) + min_steer;
 
         if (speed_cmad < 0 )
         {
             speed_cmd = -speed_cmad;
-
             if (speed_cmad < 2.0 && speed_cmad != 0.0)
             {
                 speed_cmad = 2.0;
@@ -368,19 +352,16 @@ private:
             else{ speed_cmad = speed_cmad;}
             gear_can = 1;
         }
-        else{
+        else
+        {
             speed_cmd = speed_cmad;
-
-
             if (speed_cmad < 2.0 && speed_cmad != 0.0)
             {
                 speed_cmad = 2.0;
             }
             else{ speed_cmad = speed_cmad;}
-
             gear_can = 0;
-            }
-
+        }
         speed_can = ((speed_cmad*60)/(2.0*M_PI*tire_radius));
 
         // if (speed_cmd > 0.0 && speed_cmd < 1.1)
@@ -419,9 +400,9 @@ private:
         speed_3 = (speed_can>>8) & 0xFF;   
         data_2_bus[3] = speed_3;
         data_2_bus[4] = gear_can;
-        // data_2_bus[5] = brake_can;
-        // data_2_bus[6] = decel_can;
-        // data_2_bus[7] = accel_can; 
+        data_2_bus[5] = brake_can;
+        data_2_bus[6] = decel_can;
+        data_2_bus[7] = accel_can; 
 
         {
 

@@ -9,7 +9,7 @@ class WaypointProcessor : public rclcpp::Node {
 public:
     WaypointProcessor() : Node("waypoint_processor") {
         // Parameters
-        declare_parameter("distance_threshold", 2.0);
+        declare_parameter("distance_threshold", 7.0);
         declare_parameter("map_origin_lat", 12.923903488321232);
         declare_parameter("map_origin_lon", 77.50052742264235);
         declare_parameter("map_origin_alt", 0.0);

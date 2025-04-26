@@ -6,7 +6,7 @@ smoother_server:
     transform_timeout: 0.1
     smoother_plugins: ["simple_smoother"]
     simple_smoother:
-      plugin: "nav2_smoother/SimpleSmoother"
+      plugin: "nav2_smoother::SimpleSmoother"
       tolerance: 1.0e-10
       do_refinement: True
       refinement_num: 2

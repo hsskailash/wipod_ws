@@ -1,10 +1,10 @@
 <launch>
   <!-- Start your ROS 2 node -->
-  <arg name="steer_can_id"  default="403105078"/> <!--1806E536 -->
-  <arg name="kelly_left_id"  default="217128454"/> <!--0CF11E06 -->
-  <arg name="kelly_right_id"  default="217128453"/> <!--0CF11E05  -->
-  <arg name="gear_can_id"  default="217128709"/> <!--0CF11F05 -->
-  <arg name="can_send_id" default="105"/> <!--1806D9D9 403039337-->
+  <arg name="steer_can_id"  default="288"/> <!--120 -->
+  <arg name="kelly_left_id"  default="256"/> <!--100 -->
+  <arg name="kelly_right_id"  default="400"/> <!--190-->
+  <arg name="gear_can_id"  default="401"/> <!--191 -->
+  <arg name="can_send_id" default="361"/> <!--169-->
   <arg name="base_frame_id"  default="base_link"/>
   <arg name="max_steer" default="735"/>
   <arg name="min_steer" default="435" />
@@ -15,6 +15,7 @@
   <arg name="origin_lat" default="12.923903488321232"/> <!-- Origin latitude -->
   <arg name="origin_lon" default="77.50052742264235"/>  <!-- Origin longitude -->
   <arg name="origin_alt" default="0.0"/>
+  <arg name="speed_min" default="3.0"/>
 
   
   <node pkg="wipod_interface" exec="wipod_interface" name="wipod_interface"  output="screen">
@@ -32,5 +33,6 @@
     <param name="origin_lat" value="$(var origin_lat)"/>
     <param name="origin_lon" value="$(var origin_lon)"/>
     <param name="origin_alt" value="$(var origin_alt)"/>
+    <param name="speed_min" value="$(var speed_min)"/>
   </node>
 </launch>

@@ -5,7 +5,7 @@ controller_server:
     controller_frequency: 1.0
     min_x_velocity_threshold: 5.0
     min_theta_velocity_threshold: 0.05
-    failure_tolerance: 5.0
+    failure_tolerance: 10.0
     
 
     controller_plugin_types: ["teb_local_planner::TebLocalPlannerROS"]
@@ -15,7 +15,7 @@ controller_server:
     goal_checker:
          plugin: "nav2_controller::SimpleGoalChecker"
          xy_goal_tolerance: 3.0      # Max XY distance to goal (meters)
-         yaw_goal_tolerance: 0.2     # Max yaw error (radians)
+         yaw_goal_tolerance: 0.4     # Max yaw error (radians)
          stateful: True    
     FollowPath:
       plugin: teb_local_planner::TebLocalPlannerROS
@@ -35,15 +35,15 @@ controller_server:
       publish_feedback: False
           
       # Robot
-      base_max_vel_x: 5.0
+      base_max_vel_x: 3.0
       base_max_vel_x_backwards: 3.0
       base_max_vel_y: 0.0
-      base_max_vel_theta: 0.5
+      base_max_vel_theta: 0.35
 
-      max_vel_x: 8.0
+      max_vel_x: 5.0
       max_vel_x_backwards: 5.0
       max_vel_y: 0.0
-      max_vel_theta: 0.7 
+      max_vel_theta: 0.5 
       
       acc_lim_x: 5.5
       acc_lim_y: 0.0

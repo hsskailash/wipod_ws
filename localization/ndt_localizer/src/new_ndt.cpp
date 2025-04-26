@@ -140,7 +140,7 @@ void NdtLocalizer::callback_pointsmap(const sensor_msgs::msg::PointCloud2::Share
 void NdtLocalizer::timer_tf_callback() {
     std::lock_guard<std::mutex> lock(pose_mutex_);
     if (latest_pose_.header.stamp.sec == 0) return;  // Skip if no valid pose
-    publish_tf(map_frame_, odom_frame_, latest_pose_);
+    publish_tf(map_frame_, base_frame_, latest_pose_);
   }
 
 void NdtLocalizer::callback_pointcloud(
@@ -429,76 +429,112 @@ bool NdtLocalizer::get_transform(const std::string &target_frame, const std::str
     return true;
 }
 
+// void NdtLocalizer::publish_tf(const std::string &frame_id, const std::string &child_frame_id,
+//                 const geometry_msgs::msg::PoseStamped &pose_msg)
+// {
+    
+    
+    
+//     geometry_msgs::msg::TransformStamped transform_stamped;
+//     transform_stamped.header.frame_id = frame_id;
+//     transform_stamped.child_frame_id = child_frame_id;
+//     transform_stamped.header.stamp = pose_msg.header.stamp;
+//     // transform_stamped.transform.translation.x = pose_msg.pose.position.x;
+//     // transform_stamped.transform.translation.y = pose_msg.pose.position.y;
+//     // transform_stamped.transform.translation.z = pose_msg.pose.position.z;
+//     // transform_stamped.transform.rotation = pose_msg.pose.orientation;
+//     // Convert pose msg to transform msg
+//     geometry_msgs::msg::Transform transform;
+//     transform.translation.x = pose_msg.pose.position.x;
+//     transform.translation.y = pose_msg.pose.position.y;
+//     transform.translation.z = pose_msg.pose.position.z;
+//     transform.rotation = pose_msg.pose.orientation;
+
+//     geometry_msgs::msg::TransformStamped odom_to_base_tf;
+//     try {
+//         odom_to_base_tf = tf2_buffer_->lookupTransform(
+//             odom_frame_, base_frame_, tf2::TimePointZero);
+//     } catch (tf2::TransformException &ex) {
+//         RCLCPP_WARN(this->get_logger(), "Could not lookup odom to base transform: %s", ex.what());
+//         return;
+//     }
+
+//     // Convert pose to transform
+
+//     Eigen::Isometry3d transform_eigen = tf2::transformToEigen(transform);
+
+//     Eigen::Isometry3d odom_to_base = tf2::transformToEigen(odom_to_base_tf.transform);
+
+//     // Invert the transform to go from base_link to map
+//     Eigen::Isometry3d inverted_transform = transform_eigen * odom_to_base.inverse();
+
+//     // Set the inverted transform's translation
+//     transform_stamped.transform.translation.x = inverted_transform.translation().x();
+//     transform_stamped.transform.translation.y = inverted_transform.translation().y();
+//     transform_stamped.transform.translation.z = inverted_transform.translation().z();
+
+//     // Set the inverted transform's rotation
+//     Eigen::Quaterniond quat(inverted_transform.rotation());
+//     transform_stamped.transform.rotation.x = quat.x();
+//     transform_stamped.transform.rotation.y = quat.y();
+//     transform_stamped.transform.rotation.z = quat.z();
+//     transform_stamped.transform.rotation.w = quat.w();
+
+    
+
+//     tf2_broadcaster_->sendTransform(transform_stamped);
+
+//     // geometry_msgs::msg::TransformStamped map_to_odom;
+//     // map_to_odom.header.stamp = pose_msg.header.stamp;
+//     // map_to_odom.header.frame_id = map_frame_;
+//     // map_to_odom.child_frame_id = odom_frame_;
+//     // map_to_odom.transform.translation.x = 0.0;
+//     // map_to_odom.transform.translation.y = 0.0;
+//     // map_to_odom.transform.translation.z = 0.0;
+//     // map_to_odom.transform.rotation.x = 0.0;
+//     // map_to_odom.transform.rotation.y = 0.0;
+//     // map_to_odom.transform.rotation.z = 0.0;
+//     // map_to_odom.transform.rotation.w = 1.0;  // Identity rotation
+
+//     // tf2_broadcaster_->sendTransform(map_to_odom);
+// }
 void NdtLocalizer::publish_tf(const std::string &frame_id, const std::string &child_frame_id,
-                const geometry_msgs::msg::PoseStamped &pose_msg)
+    const geometry_msgs::msg::PoseStamped &pose_msg)
 {
-    
-    
-    
-    geometry_msgs::msg::TransformStamped transform_stamped;
-    transform_stamped.header.frame_id = frame_id;
-    transform_stamped.child_frame_id = child_frame_id;
-    transform_stamped.header.stamp = pose_msg.header.stamp;
-    // transform_stamped.transform.translation.x = pose_msg.pose.position.x;
-    // transform_stamped.transform.translation.y = pose_msg.pose.position.y;
-    // transform_stamped.transform.translation.z = pose_msg.pose.position.z;
-    // transform_stamped.transform.rotation = pose_msg.pose.orientation;
-    // Convert pose msg to transform msg
-    geometry_msgs::msg::Transform transform;
-    transform.translation.x = pose_msg.pose.position.x;
-    transform.translation.y = pose_msg.pose.position.y;
-    transform.translation.z = pose_msg.pose.position.z;
-    transform.rotation = pose_msg.pose.orientation;
+geometry_msgs::msg::TransformStamped transform_stamped;
+transform_stamped.header.frame_id = frame_id;
+transform_stamped.child_frame_id = child_frame_id;
+transform_stamped.header.stamp = pose_msg.header.stamp;
+// transform_stamped.transform.translation.x = pose_msg.pose.position.x;
+// transform_stamped.transform.translation.y = pose_msg.pose.position.y;
+// transform_stamped.transform.translation.z = pose_msg.pose.position.z;
+// transform_stamped.transform.rotation = pose_msg.pose.orientation;
+// Convert pose msg to transform msg
+geometry_msgs::msg::Transform transform;
+transform.translation.x = pose_msg.pose.position.x;
+transform.translation.y = pose_msg.pose.position.y;
+transform.translation.z = pose_msg.pose.position.z;
+transform.rotation = pose_msg.pose.orientation;
+// Convert pose to transform
+Eigen::Isometry3d transform_eigen = tf2::transformToEigen(transform);
 
-    geometry_msgs::msg::TransformStamped odom_to_base_tf;
-    try {
-        odom_to_base_tf = tf2_buffer_->lookupTransform(
-            odom_frame_, base_frame_, tf2::TimePointZero);
-    } catch (tf2::TransformException &ex) {
-        RCLCPP_WARN(this->get_logger(), "Could not lookup odom to base transform: %s", ex.what());
-        return;
-    }
+// Invert the transform to go from base_link to map
+Eigen::Isometry3d inverted_transform = transform_eigen;//.inverse();
 
-    // Convert pose to transform
+// Set the inverted transform's translation
+transform_stamped.transform.translation.x = inverted_transform.translation().x();
+transform_stamped.transform.translation.y = inverted_transform.translation().y();
+transform_stamped.transform.translation.z = inverted_transform.translation().z();
 
-    Eigen::Isometry3d transform_eigen = tf2::transformToEigen(transform);
+// Set the inverted transform's rotation
+Eigen::Quaterniond quat(inverted_transform.rotation());
+transform_stamped.transform.rotation.x = quat.x();
+transform_stamped.transform.rotation.y = quat.y();
+transform_stamped.transform.rotation.z = quat.z();
+transform_stamped.transform.rotation.w = quat.w();
 
-    Eigen::Isometry3d odom_to_base = tf2::transformToEigen(odom_to_base_tf.transform);
-
-    // Invert the transform to go from base_link to map
-    Eigen::Isometry3d inverted_transform = transform_eigen * odom_to_base.inverse();
-
-    // Set the inverted transform's translation
-    transform_stamped.transform.translation.x = inverted_transform.translation().x();
-    transform_stamped.transform.translation.y = inverted_transform.translation().y();
-    transform_stamped.transform.translation.z = inverted_transform.translation().z();
-
-    // Set the inverted transform's rotation
-    Eigen::Quaterniond quat(inverted_transform.rotation());
-    transform_stamped.transform.rotation.x = quat.x();
-    transform_stamped.transform.rotation.y = quat.y();
-    transform_stamped.transform.rotation.z = quat.z();
-    transform_stamped.transform.rotation.w = quat.w();
-
-    
-
-    tf2_broadcaster_->sendTransform(transform_stamped);
-
-    // geometry_msgs::msg::TransformStamped map_to_odom;
-    // map_to_odom.header.stamp = pose_msg.header.stamp;
-    // map_to_odom.header.frame_id = map_frame_;
-    // map_to_odom.child_frame_id = odom_frame_;
-    // map_to_odom.transform.translation.x = 0.0;
-    // map_to_odom.transform.translation.y = 0.0;
-    // map_to_odom.transform.translation.z = 0.0;
-    // map_to_odom.transform.rotation.x = 0.0;
-    // map_to_odom.transform.rotation.y = 0.0;
-    // map_to_odom.transform.rotation.z = 0.0;
-    // map_to_odom.transform.rotation.w = 1.0;  // Identity rotation
-
-    // tf2_broadcaster_->sendTransform(map_to_odom);
+tf2_broadcaster_->sendTransform(transform_stamped);
 }
-
 
 int main(int argc, char **argv)
 {

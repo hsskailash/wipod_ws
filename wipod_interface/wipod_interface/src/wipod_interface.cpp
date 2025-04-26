@@ -45,7 +45,7 @@ public:
         right_steer_ = declare_parameter("right_steer", -0.523598776);
         tire_radius_ = declare_parameter("tire_radius", 0.334);
         wheel_base_ = declare_parameter("wheel_base", 2.75);
-        speed_min_ = declare_parameter("speed_min",31.0);
+        speed_min_ = declare_parameter("speed_min",3.0);
 
         origin_lat_ = declare_parameter("origin_lat", 12.923903488321232); // Default latitude
         origin_lon_ = declare_parameter("origin_lon", 77.50052742264235);  // Default longitude
@@ -130,6 +130,7 @@ private:
     float_t steering_tire_rotation_rate;
     float_t speed_cmd;
     float_t speed_cmad;
+    float_t speed_cmd_1;
     float_t acceleration;
     float_t speed_min;
     float_t steer_rate;
@@ -277,6 +278,7 @@ private:
             speed_ms = (2.0*3.14159265359*tire_radius)*(rpm/60.0);
            
         }
+        // RCLCPP_INFO(this->get_logger(), "Feedback speed: %f", speed_ms);
 
         if (gear_value == 1 || gear_value == 5)
         {
@@ -327,7 +329,6 @@ private:
             odometry_feedback.pose.covariance[14] = cov_z;
 
             odometry_feedback.twist.twist.linear.x = speed_mps;
-            
             odometry_feedback.twist.twist.angular.z = steer_rad;
             odometry_pub_->publish(odometry_feedback);
         }
@@ -344,25 +345,28 @@ private:
 
         if (speed_cmad < 0 )
         {
-            speed_cmd = -speed_cmad;
-            if (speed_cmad < 2.0 && speed_cmad != 0.0)
-            {
-                speed_cmad = 2.0;
-            }
-            else{ speed_cmad = speed_cmad;}
             gear_can = 1;
+            
         }
         else
         {
-            speed_cmd = speed_cmad;
-            if (speed_cmad < 2.0 && speed_cmad != 0.0)
-            {
-                speed_cmad = 2.0;
-            }
-            else{ speed_cmad = speed_cmad;}
             gear_can = 0;
+            
         }
-        speed_can = ((speed_cmad*60)/(2.0*M_PI*tire_radius));
+        speed_cmd = abs(speed_cmad);
+        if(speed_cmd <= speed_min && speed_cmd != 0.0)
+        {
+            speed_cmd_1 = speed_min;
+        }
+        else if(speed_cmd > speed_min)
+        {
+            speed_cmd_1 = speed_cmd;
+        }
+        else if(speed_cmd == 0.0)
+        {
+            speed_cmd_1 = 0.0;
+        }
+        speed_can = ((speed_cmd_1*60)/(2.0*M_PI*tire_radius));
 
         // if (speed_cmd > 0.0 && speed_cmd < 1.1)
         // {
@@ -400,9 +404,9 @@ private:
         speed_3 = (speed_can>>8) & 0xFF;   
         data_2_bus[3] = speed_3;
         data_2_bus[4] = gear_can;
-        data_2_bus[5] = brake_can;
-        data_2_bus[6] = decel_can;
-        data_2_bus[7] = accel_can; 
+        // data_2_bus[5] = brake_can;
+        // data_2_bus[6] = decel_can;
+        // data_2_bus[7] = accel_can; 
 
         {
 
@@ -433,7 +437,7 @@ private:
         RCLCPP_INFO(this->get_logger(), "Received speed: %d", speed_can);
         RCLCPP_INFO(this->get_logger(), "Received steer: %d", steer_can);
         RCLCPP_INFO(this->get_logger(), "Received brake: %d", brake_can); 
-        RCLCPP_INFO(this->get_logger(), "Received acceleration: %d", accel_can); 
+        // RCLCPP_INFO(this->get_logger(), "Received acceleration: %d", accel_can); 
 
         //  RCLCPP_INFO(this->get_logger(), "Received steer0: %d", steer_0); 
         //  RCLCPP_INFO(this->get_logger(), "Received steer1: %d", steer_1); 

@@ -10,7 +10,7 @@ class PosePublisher(Node):
         super().__init__('pose_publisher')
         
         # Initialize variables
-        self.json_file = '/home/bunty/wipod_ws/goals.json'
+        self.json_file = '/home/wipod_orin/wipod_ws/src/wipod_ws/planner/wipod_nav/config/goals.json'
         self.current_goal = None
         self.last_published_goal = None
         self.send_goal = None

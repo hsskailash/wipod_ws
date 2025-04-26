@@ -26,7 +26,7 @@ class OSMWaypointGenerator(Node):
 
     def load_osm_map(self):
         """Load OSM map from PBF file"""
-        map_path = "/home/bunty/Documents/map.pbf"
+        map_path = "/home/wipod_orin/wipod_ws/maps/map.pbf"
         self.get_logger().info(f"Loading OSM map from {map_path}")
         with open(map_path, "rb") as f:
             return pyroutelib3.osm.Graph.from_file(
@@ -91,7 +91,7 @@ class OSMWaypointGenerator(Node):
         """Convert route to Path message"""
         path_msg = Path()
         path_msg.header.stamp = self.get_clock().now().to_msg()
-        path_msg.header.frame_id = 'gps'
+        path_msg.header.frame_id = 'map'
         
         for lat, lon in route_points:
             pose = PoseStamped()

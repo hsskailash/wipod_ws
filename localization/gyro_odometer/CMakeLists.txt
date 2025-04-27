@@ -55,9 +55,9 @@ ament_target_dependencies(gyro_odometer_node
 install(TARGETS
   ${PROJECT_NAME}
   gyro_odometer_node
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
+  ARCHIVE DESTINATION lib/${PROJECT_NAME}
+  LIBRARY DESTINATION lib/${PROJECT_NAME}
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
 # Install include directory

@@ -1,9 +1,9 @@
 <launch>
   <!-- Start your ROS 2 node -->
-  <arg name="steer_can_id"  default="403105078"/> <!--1806E536 -->
-  <arg name="kelly_left_id"  default="217128454"/> <!--0CF11E06 -->
-  <arg name="kelly_right_id"  default="217128453"/> <!--0CF11E05  -->
-  <arg name="gear_can_id"  default="217128709"/> <!--0CF11F05 -->
+  <arg name="steer_can_id"  default="403105078"/> <!--1806E536 120-->
+  <arg name="kelly_left_id"  default="217128454"/> <!--0CF11E06 100-->
+  <arg name="kelly_right_id"  default="217128453"/> <!--0CF11E05 190 -->
+  <arg name="gear_can_id"  default="217128709"/> <!--0CF11F05 191-->
   <arg name="can_send_id" default="105"/> <!--1806D9D9 403039337-->
   <arg name="base_frame_id"  default="base_link"/>
   <arg name="max_steer" default="735"/>

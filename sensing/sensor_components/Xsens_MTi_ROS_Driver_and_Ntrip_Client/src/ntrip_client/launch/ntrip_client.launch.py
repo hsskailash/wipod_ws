@@ -13,7 +13,7 @@ def generate_launch_description():
             parameters=[{
                 # NTRIP Server Configuration
                 # Replace these values with your NTRIP caster information
-                'host': '43.240.5.42',  # NTRIP caster hostname or IP
+                'host': '103.206.29.4',  # NTRIP caster hostname or IP
                 'port': 2105,          # Default NTRIP port is 2101
                 'mountpoint': 'IFKP',  # Your NTRIP mountpoint
                 'username': 'hssathyakailash.ec18',     # Your NTRIP username

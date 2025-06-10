@@ -22,7 +22,7 @@ global_costmap:
   
         # robot_radius: 2.5
   
-        plugins: ["static_layer", "stvl_layer", "inflation_layer"]
+        plugins: ["static_layer"] #, "stvl_layer", "inflation_layer"]
           #  - "stvl_layer", , "inflation_layer"
           # - {name: static_layer, type: "costmap_2d::StaticLayer"}
           

@@ -15,7 +15,7 @@
   <arg name="origin_lat" default="12.923903488321232"/> <!-- Origin latitude -->
   <arg name="origin_lon" default="77.50052742264235"/>  <!-- Origin longitude -->
   <arg name="origin_alt" default="0.0"/>
-  <arg name="speed_min" default="2.50"/>
+  <arg name="speed_min" default="2.00"/>
 
   
   <node pkg="wipod_interface" exec="wipod_interface" name="wipod_interface"  output="screen">

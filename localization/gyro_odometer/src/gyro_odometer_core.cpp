@@ -197,21 +197,21 @@ void GyroOdometerNode::concat_gyro_and_odometer()
   vehicle_twist_queue_.clear();
   gyro_queue_.clear();
 
-  try {
-    geometry_msgs::msg::TransformStamped map_to_odom = tf_buffer_->lookupTransform(
-      "map", "odom", tf2::TimePointZero
-    );
+  // try {
+  //   geometry_msgs::msg::TransformStamped map_to_odom = tf_buffer_->lookupTransform(
+  //     "map", "odom", tf2::TimePointZero
+  //   );
 
-    // Reset integration if EKF updated map→odom
-    if (map_to_odom.header.stamp != last_map_to_odom_stamp_) {
-      current_pose_.pose.position.x = 0.0;
-      current_pose_.pose.position.y = 0.0;
-      current_pose_.pose.orientation = tf2::toMsg(tf2::Quaternion::getIdentity());
-      last_map_to_odom_stamp_ = map_to_odom.header.stamp;
-    }
-  } catch (const tf2::TransformException &ex) {
-    RCLCPP_WARN(this->get_logger(), "Could not lookup map→odom: %s", ex.what());
-  }
+  //   // Reset integration if EKF updated map→odom
+  //   if (map_to_odom.header.stamp != last_map_to_odom_stamp_) {
+  //     current_pose_.pose.position.x = 0.0;
+  //     current_pose_.pose.position.y = 0.0;
+  //     current_pose_.pose.orientation = tf2::toMsg(tf2::Quaternion::getIdentity());
+  //     last_map_to_odom_stamp_ = map_to_odom.header.stamp;
+  //   }
+  // } catch (const tf2::TransformException &ex) {
+  //   RCLCPP_WARN(this->get_logger(), "Could not lookup map→odom: %s", ex.what());
+  // }
 
   // Integrate velocity (time since last update)
   const double dt = (this->now() - current_pose_.header.stamp).seconds();

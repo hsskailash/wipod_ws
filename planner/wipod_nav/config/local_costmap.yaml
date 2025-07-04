@@ -7,8 +7,8 @@ local_costmap:
        publish_frequency: 5.0
        rolling_window: true
        transform_tolerance: 10.0
-       width: 50
-       height: 50
+       width: 100
+       height: 100
        resolution: 0.1
        # footprint:
        #   - [-1.2, -0.60]
@@ -45,7 +45,7 @@ local_costmap:
             topic: /ouster/points/non_ground
             marking: true
             clearing: true
-            obstacle_range: 50.0
+            obstacle_range: 200.0
             min_obstacle_height: 0.0
             max_obstacle_height: 2.0
             expected_update_rate: 0.0

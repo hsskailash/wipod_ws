@@ -14,7 +14,7 @@ def generate_launch_description():
     local_costmap_path = os.path.join(navigation_pkg_path, 'config', 'local_costmap.yaml')
     teb_params_path = os.path.join(navigation_pkg_path, 'config', 'teb_local_planner_params.yaml')
     smac_params_path = os.path.join(navigation_pkg_path, 'config', 'smac_planner_params.yaml')
-    bt_path = os.path.join(navigation_pkg_path, 'config', 'bt_navigator.yaml')
+    bt_path = os.path.join(navigation_pkg_path, 'config', 'navigate_to_pose_bt.xml')
     behavior_path = os.path.join(navigation_pkg_path, 'config', 'behavior_server.yaml')
     smoother_path = os.path.join(navigation_pkg_path, 'config', 'smoother_server.yaml')
     velocity_smoother_path = os.path.join(navigation_pkg_path, 'config', 'velocity_smoother.yaml')

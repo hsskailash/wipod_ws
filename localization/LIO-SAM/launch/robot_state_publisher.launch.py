@@ -32,5 +32,12 @@ def generate_launch_description():
             parameters=[{
                 'robot_description': Command(['xacro', ' ', xacro_path])
             }]
-         )
+         ),
+             Node(
+            package='rviz2',
+            executable='rviz2',
+            name='rviz2',
+            arguments=['-d', rviz_config_file],
+            output='screen'
+        )
     ])

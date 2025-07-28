@@ -100,16 +100,12 @@ Visualization Manager:
           Value: false
         imu_link:
           Value: false
-        lidar_link:
-          Value: true
         map:
           Value: true
-        odom:
-          Value: true
         os_imu:
-          Value: false
+          Value: true
         os_lidar:
-          Value: false
+          Value: true
         os_sensor:
           Value: false
       Marker Scale: 10
@@ -119,19 +115,16 @@ Visualization Manager:
       Show Names: true
       Tree:
         map:
-          odom:
-            base_link:
-              chassis_link:
-                imu:
-                  imu_link:
-                    {}
-                os_sensor:
-                  os_imu:
-                    {}
-                  os_lidar:
-                    {}
-            lidar_link:
-              {}
+          base_link:
+            chassis_link:
+              imu:
+                imu_link:
+                  {}
+              os_sensor:
+                os_imu:
+                  {}
+                os_lidar:
+                  {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -401,8 +394,7 @@ Visualization Manager:
       Enabled: true
       Name: MarkerArray
       Namespaces:
-        loop_edges: true
-        loop_nodes: true
+        {}
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -456,7 +448,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 46.88397979736328
+      Distance: 69.13369750976562
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -471,10 +463,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5397963523864746
+      Pitch: 1.3347963094711304
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.295414924621582
+      Yaw: 5.355414867401123
     Saved: ~
 Window Geometry:
   Displays:

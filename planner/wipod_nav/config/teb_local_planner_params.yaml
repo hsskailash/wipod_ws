@@ -7,7 +7,7 @@ controller_server:
     use_realtime_priority: true
     publish_zero_velocity: true
     action_server_result_timeout: 1000
-    min_x_velocity_threshold: 2.0
+    min_x_velocity_threshold: 3.0
     min_theta_velocity_threshold: 0.05
     failure_tolerance: 10.0
     
@@ -25,8 +25,8 @@ controller_server:
 
     goal_checker:
       plugin: "nav2_controller::SimpleGoalChecker"
-      xy_goal_tolerance: 1.0      # Max XY distance to goal (meters)
-      yaw_goal_tolerance: 0.4     # Max yaw error (radians)
+      xy_goal_tolerance: 3  .0      # Max XY distance to goal (meters)
+      yaw_goal_tolerance: 0.1     # Max yaw error (radians)
       stateful: True    
 
 

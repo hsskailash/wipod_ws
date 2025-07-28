@@ -4,6 +4,7 @@
 #include <nav_msgs/msg/path.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
 #include "TransverseMercatorProjector.hpp"
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 class WaypointProcessor : public rclcpp::Node {
 public:
@@ -18,10 +19,6 @@ public:
         osm_waypoints_sub_ = create_subscription<nav_msgs::msg::Path>(
             "/osm_waypoints", 10,
             std::bind(&WaypointProcessor::osm_waypoints_cb, this, std::placeholders::_1));
-            
-        // map_sub_ = create_subscription<nav_msgs::msg::OccupancyGrid>(
-        //     "/map", 10,
-        //     std::bind(&WaypointProcessor::map_cb, this, std::placeholders::_1));
             
         current_pose_sub_ = create_subscription<geometry_msgs::msg::PoseStamped>(
             "/current_pose", 10,
@@ -48,8 +45,8 @@ private:
         
         for (const auto& pose : msg->poses) {
             auto gps_point = lanelet::GPSPoint{
-                pose.pose.position.x,  // Latitude from y position
-                pose.pose.position.y,  // Longitude from x position
+                pose.pose.position.x,  // Latitude
+                pose.pose.position.y,  // Longitude
                 0.0
             };
             
@@ -58,21 +55,21 @@ private:
             geometry_msgs::msg::PoseStamped local_pose;
             local_pose.pose.position.x = projected.x();
             local_pose.pose.position.y = projected.y();
+            local_pose.pose.orientation = pose.pose.orientation; // Keep orientation
             local_pose.header = pose.header;
+            local_pose.header.frame_id = "map"; // Update frame
             
             local_waypoints_.push_back(local_pose);
         }
         
         if (!local_waypoints_.empty()) {
             // Send first waypoint immediately
-            goal_pub_->publish(local_waypoints_[0]);
+            auto first_goal = local_waypoints_[0];
+            first_goal.header.stamp = now();
+            goal_pub_->publish(first_goal);
             publish_markers();
         }
     }
-    // void map_cb(const nav_msgs::msg::OccupancyGrid::SharedPtr msg) {
-    //     // Store the latest map data (for future obstacle checks)
-    //     current_map_ = *msg;
-    // }
 
     void current_pose_cb(const geometry_msgs::msg::PoseStamped::SharedPtr msg) {
         current_pose_ = *msg;
@@ -86,14 +83,13 @@ private:
         double dy = current_pose_.pose.position.y - current_goal.pose.position.y;
         double distance = std::hypot(dx, dy);
 
-        // For first waypoint, wait for explicit success message
-        if (current_goal_index_ == 0) return;
-
         double threshold = get_parameter("distance_threshold").as_double();
         if (distance < threshold) {
             current_goal_index_++;
             if (current_goal_index_ < local_waypoints_.size()) {
-                goal_pub_->publish(local_waypoints_[current_goal_index_]);
+                auto next_goal = local_waypoints_[current_goal_index_];
+                next_goal.header.stamp = now();
+                goal_pub_->publish(next_goal);
                 publish_markers();
             }
         }
@@ -101,21 +97,51 @@ private:
 
     void publish_markers() {
         visualization_msgs::msg::MarkerArray markers;
-        visualization_msgs::msg::Marker marker;
         
-        marker.header.frame_id = "map";
-        marker.type = visualization_msgs::msg::Marker::SPHERE;
-        marker.action = visualization_msgs::msg::Marker::ADD;
-        marker.scale.x = marker.scale.y = marker.scale.z = 0.5;
+        // Point markers (spheres)
+        visualization_msgs::msg::Marker point_marker;
+        point_marker.header.frame_id = "map";
+        point_marker.type = visualization_msgs::msg::Marker::SPHERE;
+        point_marker.action = visualization_msgs::msg::Marker::ADD;
+        point_marker.scale.x = point_marker.scale.y = point_marker.scale.z = 0.5;
+        point_marker.color.a = 1.0;
+
+        // Direction markers (arrows)
+        visualization_msgs::msg::Marker arrow_marker;
+        arrow_marker.header.frame_id = "map";
+        arrow_marker.type = visualization_msgs::msg::Marker::ARROW;
+        arrow_marker.action = visualization_msgs::msg::Marker::ADD;
+        arrow_marker.scale.x = 1.0; // Length
+        arrow_marker.scale.y = 0.1; // Width
+        arrow_marker.scale.z = 0.1; // Height
+        arrow_marker.color.a = 0.8;
 
         for (size_t i = 0; i < local_waypoints_.size(); ++i) {
-            marker.id = i;
-            marker.pose = local_waypoints_[i].pose;
-            marker.color.r = (i == current_goal_index_) ? 0.0 : 1.0;
-            marker.color.g = (i == current_goal_index_) ? 1.0 : 0.0;
-            marker.color.b = 0.0;
-            marker.color.a = 1.0;
-            markers.markers.push_back(marker);
+            // Point marker
+            point_marker.id = i * 2;
+            point_marker.pose = local_waypoints_[i].pose;
+            
+            // Color coding: current goal is green, others are red
+            if (i == current_goal_index_) {
+                point_marker.color.r = 0.0;
+                point_marker.color.g = 1.0;
+                point_marker.color.b = 0.0;
+            } else {
+                point_marker.color.r = 1.0;
+                point_marker.color.g = 0.0;
+                point_marker.color.b = 0.0;
+            }
+            markers.markers.push_back(point_marker);
+
+            // Direction arrow
+            if (i < local_waypoints_.size() - 1) {
+                arrow_marker.id = i * 2 + 1;
+                arrow_marker.pose = local_waypoints_[i].pose;
+                arrow_marker.color.r = 0.0;
+                arrow_marker.color.g = 0.0;
+                arrow_marker.color.b = 1.0;
+                markers.markers.push_back(arrow_marker);
+            }
         }
         
         markers_pub_->publish(markers);
@@ -129,7 +155,6 @@ private:
     
     // ROS interfaces
     rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr osm_waypoints_sub_;
-    rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr map_sub_;
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr current_pose_sub_;
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr goal_pub_;
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr markers_pub_;

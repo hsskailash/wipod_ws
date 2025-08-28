@@ -15,6 +15,7 @@
   <arg name="origin_lat" default="12.923903488321232"/> <!-- Origin latitude -->
   <arg name="origin_lon" default="77.50052742264235"/>  <!-- Origin longitude -->
   <arg name="origin_alt" default="0.0"/>
+  <arg name="json_file_path" default="/home/bunty/wipod_ws/src/wipod_interface/wipod_interface/gnss_location.json"/>
 
   
   <node pkg="wipod_interface" exec="wipod_interface" name="wipod_interface"  output="screen">
@@ -32,5 +33,6 @@
     <param name="origin_lat" value="$(var origin_lat)"/>
     <param name="origin_lon" value="$(var origin_lon)"/>
     <param name="origin_alt" value="$(var origin_alt)"/>
+    <param name="json_file_path" value="$(var json_file_path)"/>
   </node>
 </launch>

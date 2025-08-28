@@ -10,6 +10,10 @@
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 #include "TransverseMercatorProjector.hpp"
 #include <tf2_ros/transform_broadcaster.h>
+#include <nlohmann/json.hpp>  // Include for JSON handling
+#include <fstream>     
+
+using json = nlohmann::json;
 
 class WipodInterface : public rclcpp::Node {
 public:
@@ -51,6 +55,8 @@ public:
         origin_lon_ = declare_parameter("origin_lon", 77.50052742264235);  // Default longitude
         origin_alt_ = declare_parameter("origin_alt", 0.0);  // Default longitude
 
+        json_file_path_ = declare_parameter("json_file_path", "gnss_location.json");
+
 
         // Get the desired CAN ID from the ROS parameter server
         this->get_parameter("steer_can_id", steer_can_id);
@@ -69,6 +75,8 @@ public:
         this->get_parameter("origin_lat", origin_lat);
         this->get_parameter("origin_lon", origin_lon);
         this->get_parameter("origin_alt", origin_alt);
+        this->get_parameter("json_file_path", json_file_path_);
+
 
         lanelet::Origin origin({origin_lat, origin_lon, origin_alt});
         projector_ = std::make_shared<lanelet::projection::TransverseMercatorProjector>(origin);
@@ -104,6 +112,8 @@ private:
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
     
     std::shared_ptr<lanelet::projection::TransverseMercatorProjector> projector_;
+
+    std::string json_file_path_;
 
     uint32_t steer_can_id; 
     uint32_t kelly_left_id;
@@ -164,7 +174,20 @@ private:
     double_t origin_alt;
     
 
-    
+    void updateJsonFile(double latitude, double longitude) {
+        json data;
+        data["location"]["latitude"] = latitude;
+        data["location"]["longitude"] = longitude;
+
+        std::ofstream file(json_file_path_);
+        if (file.is_open()) {
+            file << data.dump(4);  // Write JSON with indentation
+            file.close();
+            RCLCPP_INFO(this->get_logger(), "Updated GNSS location in JSON file");
+        } else {
+            RCLCPP_ERROR(this->get_logger(), "Failed to open JSON file for writing");
+        }
+    }  
 
 
 
@@ -173,6 +196,12 @@ private:
         pos_x = msg->latitude;
         pos_y = msg->longitude;
         pos_z = msg->altitude;
+
+        double latitude = msg->latitude;
+        double longitude = msg->longitude;
+
+        // Update JSON file with new coordinates
+        updateJsonFile(latitude, longitude);
 
         lanelet::GPSPoint gps_point{pos_x, pos_y, pos_z};
         lanelet::BasicPoint3d projected = projector_->forward(gps_point);
